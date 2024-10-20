@@ -1,0 +1,94 @@
+/* Basic reset */
+body, h1, ol {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+/* Header styles */
+header {
+    background-color: #343a40;
+    color: white;
+    padding: 10px;
+    text-align: center;
+}
+
+header a {
+    color: white;
+    text-decoration: none;
+    margin: 0 15px;
+    transition: color 0.3s;
+}
+
+header a:hover {
+    color: #ffc107;
+}
+
+/* Main title styles */
+h1 {
+    text-align: center;
+    margin: 20px 0;
+    color: #343a40;
+}
+
+/* Product list styles */
+#products {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 20px;
+    list-style-type: none;
+}
+
+#products li {
+    background-color: white;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    margin: 10px;
+    padding: 15px;
+    width: 200px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+#products img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 5px;
+}
+
+/* Button styles */
+button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Input styles */
+input[type="number"] {
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    padding: 5px;
+    width: 60px;
+    text-align: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    #products li {
+        width: 100%;
+    }
+}

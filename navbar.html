@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive Navbar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="flex justify-between items-center p-4 bg-gray-800 text-white">
+        <!-- Left Logo -->
+        <div class="text-2xl font-bold">
+            <a href="#">BabyShop</a>
+        </div>
+        
+        <!-- Navigation Links -->
+        <div class="hidden md:flex space-x-6">
+            <a href="#" class="hover:text-gray-400">Home</a>
+            <a href="#" class="hover:text-gray-400">Shop</a>
+            <a href="#" class="hover:text-gray-400">Blog</a>
+            <a href="#" class="hover:text-gray-400">Contact</a>
+            <a href="addproduct" class="hover:text-gray-400">Add Product</a>
+        </div>
+
+        <!-- Right Cart Icon -->
+        <div class="flex items-center">
+            <a href="cart" class="hover:text-gray-400 relative">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.341 2.034a2 2 0 001.992 1.783H17a2 2 0 001.992-1.783L19 3H5m0 0L3 16h18l-2-13H5zM5 3L4 16M3 3v0m3.5 13a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm11 0a1.5 1.5 0 100 3 1.5 1.5 0 000-3z" />
+                </svg>
+                <span id="productsCountInCart" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-1">0</span>
+            </a>
+        </div>
+
+        <!-- Mobile Menu Toggle Button -->
+        <div class="md:hidden">
+            <button id="mobile-menu-button" class="focus:outline-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden flex flex-col space-y-4 mt-4">
+            <a href="#" class="hover:text-gray-400">Home</a>
+            <a href="#" class="hover:text-gray-400">Shop</a>
+            <a href="#" class="hover:text-gray-400">Blog</a>
+            <a href="#" class="hover:text-gray-400">Contact</a>
+            <a href="addproduct" class="hover:text-gray-400">Add Product</a>
+        </div>
+    </nav>
+
+    <script>
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+    </script>
+</body>
+</html>

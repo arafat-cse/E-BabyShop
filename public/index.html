@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>E-Commerce Home</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body>
+  <!-- Navbar -->
+  <nav class="flex justify-between items-center p-4 bg-gray-800 text-white">
+    <!-- Left Logo -->
+    <div class="text-2xl font-bold">
+      <a href="/">BabyShop</a>
+    </div>
+    <!-- Navigation Links -->
+    <div class="hidden md:flex space-x-6">
+      <a href="/" class="hover:text-gray-400">Home</a>
+      <a href="#product" class="hover:text-gray-400">Shop</a>
+      <a href="indexchat" class="hover:text-gray-400">Chat</a>
+      <a href="#Contact" class="hover:text-gray-400">Contact</a>
+      <a href="addproduct" class="hover:text-gray-400">Add Product</a>
+      <!-- <a href="cart">Cart (<span id="productsCountInCart"></span>)</a> -->
+    </div>
+    <!-- Right Cart Icon -->
+    <div class="flex items-center">
+      <a href="cart" class="hover:text-gray-400 relative">
+       <img class="h-10 w-10" src="/icon/cart.png" alt="">
+        <span
+          id="productsCountInCart" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-1">0</span
+        >
+      </a>
+    </div>
+    <!-- Mobile Menu Toggle Button -->
+    <div class="md:hidden">
+      <button id="mobile-menu-button" class="focus:outline-none">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-6 w-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 6h16M4 12h16m-7 6h7"
+          />
+        </svg>
+      </button>
+    </div>
+    <!-- Mobile Menu -->
+    <div
+      id="mobile-menu"
+      class="hidden md:hidden flex flex-col space-y-4 mt-4"
+    >
+      <a href="#" class="hover:text-gray-400">Home</a>
+      <a href="#product" class="hover:text-gray-400">Shop</a>
+      <a href="indexchat" class="hover:text-gray-400">Chat</a>
+      <a href="#Contact" class="hover:text-gray-400">Contact</a>
+      <a href="addproduct" class="hover:text-gray-400">Add Product</a>
+    </div>
+  </nav>
+  <!-- Product List Section -->
+  <section id="product" class="container mx-auto py-12 pt-[100px]" > 
+    <h2 class="text-3xl font-bold text-center mb-8">Products</h2>
+    <ul id="products" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></ul>
+  </section>
+  <!-- Success Message -->
+  <div id="successMessage" class="fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded hidden">Product added to cart!</div>
+  <script>
+    const count = localStorage.getItem('cart');
+     const lent = JSON.parse(count);
+        // console.log(lent.length);
+        document.getElementById("productsCountInCart").innerHTML = lent.length;
+      let productsList = [];
+      function openModal(index) {
+          const product = productsList[index];
+          document.getElementById("modalTitle").innerText = product.name;
+          document.getElementById("modalDescription").innerText = product.description;
+          document.getElementById("productModal").style.display = "flex";
+      }
+      function closeModal() {
+          document.getElementById("productModal").style.display = "none";
+      }
+      function increaseQty(index) {
+          const qtyInput = document.getElementById("qty_" + index);
+          qtyInput.value = parseInt(qtyInput.value) + 1;
+      }
+      function decreaseQty(index) {
+          const qtyInput = document.getElementById("qty_" + index);
+          if (parseInt(qtyInput.value) > 0) {
+              qtyInput.value = parseInt(qtyInput.value) - 1;
+          }
+      }
+      function addToCart(index) {
+       
+          const product = productsList[index];
+          const qty = document.getElementById("qty_" + index).value;
+          if (qty == 0 || qty == null || qty == undefined) {
+              alert("Please select a quantity.");
+          } else {
+              product.qty = qty;
+              product.total = parseFloat(product.qty) * parseFloat(product.price);
+              
+              // Get products from local storage or initialize an empty array
+              let productsInCart = JSON.parse(localStorage.getItem("cart")) || [];
+              
+              // Add product to cart
+              productsInCart.push(product);
+              
+              // Store updated cart in local storage
+              localStorage.setItem("cart", JSON.stringify(productsInCart));
+              // Show success message
+              showSuccessMessage();
+              const count = localStorage.getItem('cart');
+              const lent = JSON.parse(count);
+              console.log(lent.length);
+              document.getElementById("productsCountInCart").innerHTML = lent.length;
+                }
+      }
+      function showSuccessMessage() {
+          const successMessage = document.getElementById("successMessage");
+          successMessage.classList.remove("hidden");
+          // Hide the success message after 3 seconds
+          setTimeout(() => {
+              successMessage.classList.add("hidden");
+          }, 3000);
+      }
+      function getProductsAsync(theUrl, callback) {
+          var xmlHttp = new XMLHttpRequest();
+          xmlHttp.onreadystatechange = function () {
+              if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+                  productsList = JSON.parse(xmlHttp.responseText);
+                  let products = "";
+                  for (let i = 0; i < productsList.length; i++) {
+                      products += `<li class="bg-white shadow-md rounded-lg p-4 flex flex-col items-center">
+                          <img src="/files/${productsList[i].path}" alt="${productsList[i].name}" class="w-full h-40 object-cover mb-4">
+                          <h3 class="text-lg font-semibold">${productsList[i].name}</h3>
+                          <p class="text-gray-600 mb-2">৳ ${productsList[i].price}</p>
+                          <div class="flex justify-between items-center mb-4">
+                              <button class="bg-gray-300 text-gray-700 px-2 py-1 rounded" onclick="decreaseQty(${i})">-</button>
+                              <input type="text" id="qty_${i}" value="0" class="w-12 text-center border border-gray-300 rounded" readonly />
+                              <button class="bg-gray-300 text-gray-700 px-2 py-1 rounded" onclick="increaseQty(${i})">+</button>
+                          </div>
+                          <button class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mb-2" onclick="addToCart(${i})">Add to Cart</button>
+                          <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" onclick="openModal(${i})">More</button>
+                      </li>`;
+                  }
+                   document.getElementById("products").innerHTML = products;
+              }
+          };
+          xmlHttp.open("GET", theUrl, true);
+          xmlHttp.send(null);
+      }
+      // Load products after the page is loaded
+      document.addEventListener("DOMContentLoaded", function () {
+          getProductsAsync("/api/products", null);
+      });
+  </script>
+    <!-- Contact Section -->
+    <section id="Contact" class="contact">
+      <h2>Contact Us</h2>
+      <form>
+        <input type="text" placeholder="Your Name" required />
+        <input type="email" placeholder="Your Email" required />
+        <textarea placeholder="Your Message" required></textarea>
+        <button type="submit">Submit</button>
+      </form>
+    </section>
+
+    <!-- Footer Section -->
+    <footer>
+      <p>&copy; 2024 E-Commerce Store</p>
+    </footer>
+  </body>
+</html>

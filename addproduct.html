@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Product</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            padding: 20px;
+        }
+        h2 {
+            text-align: center;
+        }
+        form {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        form div {
+            margin-bottom: 15px;
+        }
+        form label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        form input[type="text"], form input[type="number"], form input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+        }
+        form button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        form button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="flex justify-between items-center p-4 bg-gray-800 text-white">
+        <!-- Left Logo -->
+        <div class="text-2xl font-bold">
+          <a href="/">BabyShop</a>
+        </div>
+        <!-- Navigation Links -->
+        <div class="hidden md:flex space-x-6">
+          <a href="/" class="hover:text-gray-400">Home</a>
+          <a href="#product" class="hover:text-gray-400">Shop</a>
+          <a href="indexchat" class="hover:text-gray-400">Chat</a>
+          <a href="#Contact" class="hover:text-gray-400">Contact</a>
+          <a href="addproduct" class="hover:text-gray-400">Add Product</a>
+          <!-- <a href="cart">Cart (<span id="productsCountInCart"></span>)</a> -->
+        </div>
+        <!-- Right Cart Icon -->
+        <div class="flex items-center">
+          <a href="cart" class="hover:text-gray-400 relative">
+           <img class="h-10 w-10" src="/icon/cart.png" alt="">
+            <span
+              id="productsCountInCart" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-1">0</span
+            >
+          </a>
+        </div>
+        <!-- Mobile Menu Toggle Button -->
+        <div class="md:hidden">
+          <button id="mobile-menu-button" class="focus:outline-none">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 6h16M4 12h16m-7 6h7"
+              />
+            </svg>
+          </button>
+        </div>
+        <!-- Mobile Menu -->
+        <div
+          id="mobile-menu"
+          class="hidden md:hidden flex flex-col space-y-4 mt-4"
+        >
+          <a href="#" class="hover:text-gray-400">Home</a>
+          <a href="#product" class="hover:text-gray-400">Shop</a>
+          <a href="indexchat" class="hover:text-gray-400">Chat</a>
+          <a href="#Contact" class="hover:text-gray-400">Contact</a>
+          <a href="addproduct" class="hover:text-gray-400">Add Product</a>
+        </div>
+      </nav>
+<!-- product Add  -->
+    <h2 class="pt-[100px]">Add New Product</h2>
+    <form id="productForm" enctype="multipart/form-data">
+        <div>
+            <label for="product_code">Product Code:</label>
+            <input type="text" id="product_code" name="product_code">
+        </div>
+        <div>
+            <label for="product_name">Product Name:</label>
+            <input type="text" id="product_name" name="product_name">
+        </div>
+        <div>
+            <label for="price">Price:</label>
+            <input type="number" id="price" name="price">
+        </div>
+        <div>
+            <label for="path">Upload Image:</label>
+            <input type="file" id="path" name="path">
+        </div>
+        
+        <button id="submit" type="submit">Add Product</button>
+    </form>
+
+    <script>
+        document.getElementById("submit").addEventListener('click', (event) => {
+            event.preventDefault();
+    
+            const formData = new FormData();
+            formData.append("product_code", document.getElementById("product_code").value);
+            formData.append("product_name", document.getElementById("product_name").value);
+            formData.append("price", document.getElementById("price").value);
+            formData.append("path", document.getElementById("path").files[0]);
+            fetch('http://localhost:30/addproduct', { // Ensure the port matches the one in your server code
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                console.log("Response from server:", data);
+                if (data.message) {
+                    // Show success message
+                    alert("Product added successfully!");
+                    // Optionally, reset the form after submission
+                    document.getElementById("productForm").reset();
+                } else {
+                    alert("Failed to add product.");
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("An error occurred. Please try again.");
+            });
+        });
+    </script> 
+</body>
+</html>

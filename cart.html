@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart: E-Commerce</title>
+   
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 20px;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            text-align: center;
+        }
+
+        header a {
+            color: white;
+            text-decoration: none;
+            padding: 0 15px;
+            font-weight: bold;
+        }
+
+        h1 {
+            margin: 20px 0;
+            text-align: center;
+            color: #333;
+        }
+
+        #form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: auto;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            color: #333;
+        }
+
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button[type="button"] {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button[type="button"]:hover {
+            background-color: #218838;
+        }
+
+        table {
+            width: 100%;
+            margin: 20px 0;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ccc;
+        }
+
+        th {
+            background-color: #f0f0f0;
+        }
+
+        img {
+            max-width: 100px;
+            height: auto;
+            display: block;
+            margin: auto;
+        }
+
+        #grandTotal {
+            font-weight: bold;
+            color: #28a745;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            table, thead, tbody, th, td, tr {
+                display: block;
+                width: 100%;
+            }
+
+            th, td {
+                text-align: right;
+            }
+
+            td {
+                padding-left: 50%;
+            }
+
+            td:before {
+                content: attr(data-label);
+                position: absolute;
+                left: 0;
+                padding-left: 10px;
+                font-weight: bold;
+            }
+
+            tr {
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+   <!-- Navbar -->
+   <nav class="flex justify-between items-center p-4 bg-gray-800 text-white">
+    <!-- Left Logo -->
+    <div class="text-2xl font-bold">
+      <a href="/">BabyShop</a>
+    </div>
+    <!-- Navigation Links -->
+    <div class="hidden md:flex space-x-6">
+      <a href="/" class="hover:text-gray-400">Home</a>
+      <a href="product" class="hover:text-gray-400">Shop</a>
+      <a href="indexchat" class="hover:text-gray-400">Chat</a>
+      <a href="Contact" class="hover:text-gray-400">Contact</a>
+      <a href="addproduct" class="hover:text-gray-400">Add Product</a>
+      <!-- <a href="cart">Cart (<span id="productsCountInCart"></span>)</a> -->
+    </div>
+    <!-- Right Cart Icon -->
+    <div class="flex items-center">
+      <a href="cart" class="hover:text-gray-400 relative">
+       <img class="h-10 w-10" src="/icon/cart.png" alt="">
+        <span
+          id="productsCountInCart" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-1">0</span
+        >
+      </a>
+    </div>
+    <!-- Mobile Menu Toggle Button -->
+    <div class="md:hidden">
+      <button id="mobile-menu-button" class="focus:outline-none">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-6 w-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 6h16M4 12h16m-7 6h7"
+          />
+        </svg>
+      </button>
+    </div>
+    <!-- Mobile Menu -->
+    <div
+      id="mobile-menu"
+      class="hidden md:hidden flex flex-col space-y-4 mt-4"
+    >
+      <a href="#" class="hover:text-gray-400">Home</a>
+      <a href="#product" class="hover:text-gray-400">Shop</a>
+      <a href="indexchat" class="hover:text-gray-400">Chat</a>
+      <a href="#Contact" class="hover:text-gray-400">Contact</a>
+      <a href="addproduct" class="hover:text-gray-400">Add Product</a>
+    </div>
+  </nav>
+
+    <h1>ChackOut</h1>
+
+    <!-- User Form -->
+    <div id="form">
+        <label for="name">Name:</label>
+        <input type="text" id="name" placeholder="Your name">
+
+        <label for="phone">Phone:</label>
+        <input type="text" id="phone" placeholder="Your phone">
+
+        <label for="email">E-Mail:</label>
+        <input type="text" id="email" placeholder="Your email">
+
+        <label for="address">Address:</label>
+        <textarea id="address" cols="20" rows="5" placeholder="Your address"></textarea>
+
+        <button type="button" onclick="createSalesOrder();" id="btnSubmit">Submit</button>
+    </div>
+
+    <!-- Cart Table -->
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Code</th>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Total</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="products"></tbody>
+        <tfoot>
+            <tr>
+                <th colspan="5">Grand Total:</th>
+                <th id="grandTotal" style="text-align: right;"></th>
+            </tr>
+        </tfoot>
+    </table>
+
+    <script src="js/e-commerce.js"></script>
+    <script src="https://unpkg.com/realm-web@1.5.1/dist/bundle.iife.js"></script>
+    <script>
+       
+        document.addEventListener("DOMContentLoaded", function () {
+            console.log('DOMContentLoaded');
+            countProductInCart();
+            getProductInCart();
+        });
+
+        function getProductInCart() {
+            var listProduct = getItemInLocalStorage('cart');
+            if (listProduct != null) {
+                var products = '';
+                var grandTotal = 0;
+                for (var i = 0; i < listProduct.length; i++) {
+                    products += '<tr>'
+                        + '<td>' + '<img src="/files/' + listProduct[i].path + '" style="width:180px">' + '</td>'
+                        + '<td>' + listProduct[i].code + '</td>'
+                        + '<td>' + listProduct[i].name + '</td>'
+                        + '<td>' + listProduct[i].price + '</td>'
+                        + '<td>' + listProduct[i].qty + '</td>'
+                        + '<td>' + listProduct[i].total + '</td>'
+                        + '<td><button onclick="removeProductInCart(' + i + ');">Remove</button></td>'
+                        + '</tr>';
+                    grandTotal += parseFloat(listProduct[i].total);
+                }
+                document.getElementById('products').innerHTML = products;
+                document.getElementById('grandTotal').innerText = grandTotal;
+            } else {
+                document.getElementById('products').innerHTML = '';
+                document.getElementById('grandTotal').innerText = '';
+            }
+        }
+
+        function removeProductInCart(index) {
+            var listProduct = getItemInLocalStorage('cart');
+            var isConfirm = confirm('Are sure to remove the product from cart?');
+            if (isConfirm) {
+                if (listProduct != null) {
+                    if (listProduct.length > 0) {
+                        if (index > -1) {
+                            listProduct.splice(index, 1);
+                            setItemInLocalStorage('cart', JSON.stringify(listProduct));
+                            getProductInCart();
+                            countProductInCart();
+                        }
+                    }
+                }
+            }
+        }
+
+        function createSalesOrder() {
+            var name = document.getElementById('name');
+            var phone = document.getElementById("phone");
+            var email = document.getElementById("email");
+            var address = document.getElementById("address");
+            var listProduct = getItemInLocalStorage('cart');
+            if (listProduct == null || listProduct.length == 0) {
+                alert('Add your product to the cart first.');
+            } else if (!name.value) {
+                alert('Name is required');
+                name.focus();
+            } else if (!phone.value) {
+                alert('Phone is required');
+                phone.focus();
+            } else if (!email.value) {
+                alert('Email is required');
+                email.focus();
+            } else if (!address.value) {
+                alert('Address is required');
+                address.focus();
+            } else {
+                document.getElementById("btnSubmit").innerText = "Submitting...";
+                document.getElementById("btnSubmit").disabled = true;
+                var jsObject = { name: name.value, email: email.value, phone: phone.value, address: address.value, products: listProduct };
+                var strJsObject = JSON.stringify(jsObject);
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function () {
+                    if (this.readyState == 4 && this.status == 200) {
+                        console.log(this.responseText);
+                        resetSales();
+                        countProductInCart();
+                        getProductInCart();
+                        alert('Order submitted successfully.');
+                    }
+                };
+                xhttp.open("POST", "/api/createsales", true);
+                xhttp.setRequestHeader("Content-Type", "application/json");
+                xhttp.send(strJsObject);
+            }
+        }
+
+        function resetSales() {
+            document.getElementById('name').value = '';
+            document.getElementById('phone').value = '';
+            document.getElementById('email').value = '';
+            document.getElementById('address').value = '';
+            document.getElementById("btnSubmit").innerText = "Submit";
+            document.getElementById("btnSubmit").disabled = false;
+            removeItemInLocalStorage('cart');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,614 @@
+<!DOCTYPE html> 
+<html ng-app="MapApp" ng-controller="MapCtrl">
+
+<head>
+    <title translate="title"></title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0, target-densitydpi=device-dpi"
+    />
+    <meta name="description" translate translate-attr-content="description">
+	<meta name="keywords" translate translate-attr-content="keywords">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="shortcut icon" href="./assets/img/favicon_n.ico"/>
+    <link href="https://fonts.googleapis.com/css?family=PT+Sans+Narrow" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css"> 
+    <link rel="stylesheet" href="assets/css/animate.css">
+    <link rel="stylesheet" href="assets/css/icomoon-fonts.min.css">
+    <link rel="stylesheet" href="assets/css/pe-line-icons.min.css">
+    <link rel="stylesheet" href="assets/css/font-awesome.min.css">
+    <link rel="stylesheet" href="assets/css/app.css">
+    <script src="app/js/jquery.js"></script>
+    <script src="app/js/bootstrap.min.js"></script>
+    <script src="app/js/jquery-migrate.min.js"></script>
+
+</head>
+<body>
+    <style>
+    </style>
+<!-- header  -->     
+<header role="header">
+    <div class="container">
+        <div class="header-toolbar clearfix">
+            <nav class="clearfix">
+                <ul class="nav">
+                    <li>
+                        <a href="#" class="mk-moon-share-2" onclick="showpopup()" data-toggle="modal" data-target="#myModal"></a>
+                    </li>
+                    <li>
+                        <a href="https://www.vtech.com/en/contact/contact-us" class="mk-li-contact mk-li-mail"></a>
+                    </li>
+                    <li>
+                        <a href="#" data-show="en" onclick="changeLanguage('en')" class="mk-lang-name mk-language"
+                           translate="buttonLangEn" style="display: none;"></a>
+                    </li>
+                    <li>
+                        <a href="#" data-show="tc" onclick="changeLanguage('tc')" class="mk-lang-name mk-language"
+                           translate="buttonLangTc"></a>
+                    </li>
+                    <li>
+                        <a href="#" data-show="sc" onclick="changeLanguage('sc')" class="mk-lang-name mk-language"
+                           translate="buttonLangSc"></a>
+                    </li>
+                    <!-- <li class="search">
+                        <div id="mk-header-search">
+                            <form class="mk-header-searchform ng-pristine ng-valid" method="get"
+                                  id="mk-header-searchform" ng-submit="submitForm($event)">
+                                    <span>
+                                        <input type="text" class="text-input on-close-state" ng-model="dataSearch"
+                                               value="" name="s" id="s" placeholder="Search.." style="width: 90px;"> <i
+                                            class="mk-icon-search"><input value="" type="submit"
+                                                                          class="header-search-btn"></i>
+                                    </span>
+                            </form>
+                        </div>
+                    </li> -->
+                </ul>
+            </nav>
+        </div>
+        <div class="header-logo">
+            <a href="#">
+                <img src="assets/img/VTech-Logo-blue-110.png" alt="VTech"></a>
+        </div>
+        <!-- <nav class="navbar navbar-default main-nav visible-mobile"> -->
+        <nav class="navbar navbar-default main-nav hidden">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                        data-target="#main-navbar-collapse" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a href="#" class="navbar-brand">
+                    <img src="assets/img/VTech-Logo-blue-110.png" alt="VTech"></a>
+                <!--<a class="navbar-brand" href="#">Vtech</a>
+            -->
+            </div>
+            <div class="collapse navbar-collapse" id="main-navbar-collapse">
+                <ul class="nav navbar-nav">
+                    <li ng-repeat="(areaKey,area) in filteredAreas = ( areas)">
+                        <a onclick="showRegion(this,area.id)">{{ area.name }}</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+</header>
+
+<!-- main content -->
+<div class="map-container container">
+    <div class="overlay"></div>
+    <img src="assets/img/world-map-en.png" id="img-map" class="img-responsive" usemap="#imageMap"
+         width="1140" height="613"
+         data-region="" data-country="">
+    <map name="imageMap" id="imageMap">
+
+        <!-- <area onclick="zoomInRegion(this)" onmouseenter="highlight(this)"  id="europe" class="region" shape="poly"
+              coords="490,69,481,69,471,76,474,91,463,92,462,94,472,104,500,104,506,116,511,113,513,104,512,119,528,131,527,139,531,140,542,135,538,152,553,171,560,170,571,156,558,147,560,128,568,121,570,107,578,101,578,95,599,75,600,69,591,58,588,58,584,47,569,45,573,29,664,28,665,30,664,32,662,34,636,36,616,59,605,54,601,57,602,58,607,64,604,81,609,82,632,78,677,91,701,81,713,60,731,51,731,37,729,37,693,37,683,34,683,26,685,23,748,17,753,25,752,27,737,37,734,51,758,49,760,60,734,66,729,77,729,79,749,87,754,96,759,98,759,126,758,153,753,153,752,158,741,170,736,170,735,176,730,176,730,178,729,181,723,182,724,192,713,199,712,204,696,207,702,231,701,249,695,250,696,255,679,256,641,256,635,253,617,256,594,244,579,248,575,237,582,232,557,223,557,224,559,237,520,250,513,215,535,212,535,208,528,194,532,189,522,186,522,181,507,181,506,171,517,141,516,139,511,128,512,125,504,119,467,124,465,104,455,97,435,97,435,106,427,114,412,115,410,126,406,126,403,139,397,143,390,139,390,137,383,137,380,133,376,132,375,120,371,120,369,91,365,91,364,80,359,80,359,70,338,64,324,63,324,61,323,58,317,58,315,41,310,37,309,36,308,47,298,52,297,57,285,63,274,58,257,57,241,43,237,35,259,8,272,8,284,0,327,0,343,6,361,13,418,0,441,0,444,4,470,8,478,14,486,11,503,27,492,37,511,76,525,77,527,79,526,81,516,92,515,90,509,79,513,100,513,104"
+              href="#" alt="{{ 'regionEurope' | translate}}"/> -->
+            <area onclick="zoomInRegion(this)" onmouseenter="highlight(this)"  id="europe" class="region" shape="poly"
+              coords="576,27,655,26,685,22,701,16,747,16,753,26,757,51,755,61,728,74,745,83,754,97,754,148,731,172,724,178,720,188,708,200,695,202,693,220,700,229,698,243,686,252,643,254,619,253,600,242,586,245,579,238,556,236,527,246,511,241,512,214,510,180,458,164,397,139,373,128,367,89,353,65,327,62,315,58,288,58,257,55,241,34,256,12,276,10,285,1,319,-1,338,5,341,15,362,14,370,6,388,0,435,0,460,5,471,11,486,11,497,17"
+              href="#" alt="{{ 'regionEurope' | translate}}"/>
+
+        <!-- <area onclick="zoomInRegion(this)" onmouseenter="highlight(this)"  id="latin" class="region" shape="poly"
+              coords="342,607,324,613,315,613,316,605,310,603,300,573,302,556,306,552,300,542,305,540,306,521,311,515,311,472,315,468,318,456,306,449,276,453,251,466,243,473,232,479,214,488,198,488,173,488,148,484,121,482,95,474,87,473,68,448,69,447,80,446,85,467,97,468,101,463,117,458,124,467,142,469,166,484,197,482,220,481,239,468,257,457,293,438,289,422,282,408,283,391,283,391,261,390,250,395,242,382,249,378,251,373,258,373,258,374,258,382,280,386,285,378,288,376,288,369,294,366,295,355,281,354,270,353,244,333,243,327,222,324,212,318,204,311,203,309,199,308,198,306,198,298,202,295,234,295,238,304,240,305,240,308,247,311,254,306,267,304,271,319,279,321,296,342,308,337,312,333,340,334,341,326,340,323,335,319,288,317,288,316,292,308,274,307,272,301,280,294,299,295,308,294,312,297,321,301,322,301,323,304,331,309,349,318,350,345,355,354,377,362,386,381,395,383,401,388,409,390,412,393,423,396,429,429,419,437,418,460,413,466,412,472,384,487,382,507,360,528,358,534,344,536,344,537,341,552,335,559,336,573,326,583,326,590,333,594,334,598,340,599,343,592,340,585,353,583,356,588,346,592,347,595"
+              href="#" alt="{{ 'regionLatin' | translate}}"/> -->
+        <area onclick="zoomInRegion(this)" onmouseenter="highlight(this)"  id="latin" class="region" shape="poly"
+              coords="199,298,230,295,280,297,304,294,341,312,345,319,344,347,361,355,376,367,382,375,396,385,418,397,425,401,428,423,416,432,416,457,409,464,386,481,380,503,358,529,342,537,343,548,333,562,338,568,355,583,340,603,320,611,303,595,299,550,306,515,309,473,282,405,245,391,251,373"
+              href="#" alt="{{ 'regionLatin' | translate}}"/>
+
+        <!-- <area onclick="zoomInRegion(this)" onmouseenter="highlight(this)"  id="middle_east_africa" class="region" shape="poly"
+              coords="735,232,735,238,776,239,776,243,780,244,781,248,780,249,775,255,770,255,769,259,769,261,764,261,763,266,758,267,757,271,752,277,752,294,751,295,733,297,730,306,725,312,726,316,723,318,715,319,714,324,701,326,701,330,691,330,690,333,680,336,680,337,703,339,714,335,714,338,713,340,708,342,704,340,703,345,703,357,698,359,692,370,693,376,692,376,692,375,691,372,682,383,682,382,682,383,671,401,674,412,675,421,702,429,702,438,703,440,721,442,723,449,721,449,700,449,698,457,699,458,725,458,727,466,725,467,714,468,705,461,700,462,700,463,696,481,680,486,670,473,672,466,668,427,668,431,668,444,662,455,653,467,653,468,651,473,651,480,651,481,648,484,646,497,634,509,629,516,612,518,609,523,598,524,598,520,590,508,586,505,585,491,579,483,578,468,574,466,574,445,573,417,569,408,569,389,567,388,557,386,557,383,561,371,543,367,540,371,506,371,502,366,501,362,494,358,492,340,482,333,476,327,461,331,453,316,461,314,473,316,478,326,481,326,484,296,489,295,489,293,477,279,480,275,490,275,494,278,503,272,483,261,490,260,494,266,504,266,515,254,518,249,540,247,549,242,572,242,593,238,593,245,588,247,587,256,578,257,578,259,590,261,590,265,599,265,602,260,615,260,618,265,643,264,682,254,692,254,697,250,701,249,701,244,704,243,707,237,707,227,711,227,716,233,693,377,694,379,693,379,694,379,695,383,694,383,694,383,696,386,697,387,696,387,697,387,708,399,708,400,706,400,715,408,706,408,706,403,708,400,720,402,720,403"
+              href="#" alt="{{ 'regionMiddleEastAfrica' | translate}}"/> -->
+        <area onclick="zoomInRegion(this)" onmouseenter="highlight(this)"  id="middle_east_africa" class="region" shape="poly"
+              coords="707,229,731,234,771,240,776,245,754,268,749,291,727,293,729,305,720,313,710,337,723,462,685,480,642,493,622,519,600,519,588,502,583,483,574,462,571,405,557,381,559,365,538,370,508,367,496,353,490,338,463,328,456,320,483,301,484,288,480,281,487,265,508,260,519,249,543,243,575,240,590,241,588,260,610,260,637,262,651,257,686,258,701,253,707,244"
+              href="#" alt="{{ 'regionMiddleEastAfrica' | translate}}"/>
+
+        <!-- <area onclick="zoomInRegion(this)" onmouseenter="highlight(this)"  id="asia" class="region" shape="poly"
+              coords="0,0,1,0,701,227,701,213,696,204,712,204,713,199,724,192,723,182,730,181,735,175,735,170,740,170,754,153,758,153,758,97,752,88,752,83,761,73,767,67,772,77,783,77,781,68,790,74,797,69,815,56,816,45,828,44,824,33,821,18,833,20,850,26,857,32,866,33,869,38,880,42,874,50,903,63,917,68,924,73,937,66,949,78,980,74,967,58,1002,54,1014,50,1029,54,1015,59,1012,69,1007,63,995,63,1000,69,1010,78,1040,78,1069,84,1108,78,1124,80,1113,88,1126,98,1141,101,1136,119,1125,122,1119,115,1108,115,1105,132,1093,133,1066,144,1054,152,1066,160,1084,179,1071,173,1062,172,1049,169,1029,189,1021,205,1023,186,1025,158,1044,136,1028,137,1025,148,995,149,978,162,999,166,999,202,995,208,1017,206,995,231,978,257,973,262,959,263,942,270,938,246,925,241,925,284,926,301,933,291,953,279,947,289,942,299,930,302,924,307,917,307,916,296,907,306,885,316,880,352,860,357,868,365,870,382,878,367,889,364,906,353,913,344,916,314,929,312,931,326,941,338,948,357,991,354,1002,323,1001,355,1022,350,1045,347,1066,319,1057,342,1076,354,1058,346,1030,354,1055,367,1033,359,1020,362,1006,364,994,362,951,362,956,382,990,384,1078,378,1096,396,1125,426,1141,445,1124,448,1122,467,1102,456,1084,451,1089,481,1091,517,1084,557,1074,572,1064,575,1057,587,1059,573,1060,557,1079,536,1084,515,1075,451,1057,473,1059,437,1101,441,1112,455,1127,437,1115,424,1102,415,1086,414,1087,400,1063,393,1024,386,1036,402,1045,409,1048,430,1023,412,1003,429,1030,484,1023,525,1011,539,1002,553,988,539,970,528,954,513,900,521,898,506,893,485,893,467,911,457,937,436,949,432,949,422,930,428,879,418,849,391,835,369,831,354,825,344,831,331,836,352,846,359,847,343,840,331,832,324,829,309,814,309,799,321,799,330,795,340,798,362,791,353,782,352,778,343,777,355,772,369,770,352,776,351,774,327,768,311,754,304,752,283,753,273,757,272,758,268,764,265,764,261,769,261,769,256,775,255,775,250,780,249,780,244,776,244,775,239,771,238,769,238,766,238,764,238,761,238,758,239,736,238,735,232,730,232,724,232,721,233,718,232,716,233,713,232,712,227,707,227"
+              href="#" alt="{{ 'regionAsia' | translate}}"/> -->
+              <area onclick="zoomInRegion(this)" onmouseenter="highlight(this)"  id="asia" class="region" shape="poly"
+              coords="770,368,752,299,756,276,781,251,780,240,736,237,715,229,703,225,695,209,717,202,726,188,757,157,760,101,751,91,767,73,781,74,790,79,815,64,812,50,828,35,822,21,843,23,876,40,877,53,892,56,900,60,901,68,916,68,927,76,942,69,949,83,980,75,968,61,1010,54,1024,55,1012,69,998,70,1005,79,1039,82,1064,86,1070,91,1075,86,1099,84,1123,84,1104,90,1116,95,1135,104,1136,114,1132,119,1123,119,1112,118,1106,123,1105,133,1094,136,1086,137,1074,145,1058,146,1054,159,1088,176,1047,165,1040,178,1029,186,1025,198,1013,212,1014,218,995,227,990,242,990,254,959,265,957,271,949,286,939,302,928,311,935,326,940,346,941,363,965,358,987,361,1000,317,1007,361,1024,355,1070,318,1074,346,1049,372,1084,381,1094,393,1098,417,1139,436,1122,464,1066,468,1057,471,1088,528,1093,536,1083,559,1063,579,1057,583,1005,551,962,517,917,523,901,524,894,491,895,467,912,456,932,441,876,416,835,380,797,362,781,354"
+              href="#" alt="{{ 'regionAsia' | translate}}"/>
+
+        <area onclick="zoomInRegion(this)" onmouseenter="highlight(this)"  id="north" class="region" shape="poly"
+              coords="3,176,4,147,6,114,13,100,34,80,93,80,140,74,158,47,198,34,217,28,231,32,237,38,241,45,262,58,294,65,308,75,328,81,345,99,345,153,360,162,369,206,351,208,344,215,324,218,306,241,299,260,290,270,305,290,298,295,289,297,267,279,240,284,235,295,196,297,193,309,179,299,34,314,48,297,69,308,172,297,136,222,112,174,74,144,52,167,34,169,21,172,117,215"
+              href="#" alt="{{ 'regionNorth' | translate}}"/>
+    </map>
+    <div class="pins-container">
+        <div class="country-tooltip animated bounceIn"></div>
+    </div>
+    <!-- Sidebar -->
+    <section class="sidebar animated">
+        <div>
+            <h2 class="text-center select-label mk-lang-name" translate="selectYourRegion">Select your region:</h2>
+           
+        </div>
+        <a href="#" id="btn-close-sidebar" class="back-region-close"  translate="backregion" onclick="closeSidebar()" ></a>
+    </section>
+    
+    <!-- End sidebar section -->
+    <div id="detail">
+        <div class="main-content clearfix"></div>
+    </div>
+</div>
+
+<!-- footter -->
+<footer role="footer">
+    <div class="footer-top">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-1-5 col-md-1-5">
+                    <a href="#" class="footer-logo">
+                        <img src="assets/img/vtech-logo-white-1101.png" alt="Vtech" class="img-responsive"/>
+                    </a>
+                </div>
+                <div class="col-sm-1-5 col-md-1-5">
+                    <ul>
+                        <li>
+                            <a href="https://www.vtech.com/en" data-href="/" data-href-tc="/" data-href-sc="/" translate="corporateHome"></a>
+                        </li>
+                        <li>
+                            <a href="https://www.vtech.com/en/about-us/who-we-are/" data-href="about-us/who-we-are/" data-href-tc="about-us/who-we-are/" data-href-sc="about-us/who-we-are/" translate="aboutUs"></a>
+                        </li>
+                        <li>
+                            <a href="https://www.vtech.com/en/business/electronic-learning-products/" data-href="business/electronic-learning-products/" data-href-tc="business/electronic-learning-products/" data-href-sc="business/electronic-learning-products/" translate="ourBusinesses"></a>
+                        </li>                        
+                        <li>
+                            <a href="https://sustainability.vtech.com/" data-href="https://sustainability.vtech.com/" data-href-tc="https://sustainability.vtech.com/zh_hk/" data-href-sc="https://sustainability.vtech.com/zh_hk/"translate="sustainability"></a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-sm-1-5 col-md-1-5">
+                    <ul>
+						<li>
+                            <a href="https://www.vtech.com/en/newsroom/" data-href="newsroom/" data-href-tc="newsroom/" data-href-sc="newsroom/" translate="newsroom"></a>
+                        </li>
+                        <li>
+                            <a href="https://www.vtech.com/en/investors/results-reports/" data-href="investors/results-reports/" data-href-tc="investors/results-reports/" data-href-sc="investors/results-reports/" translate="investors"></a>
+                        </li>                        
+						<li>
+                            <a href="https://www.vtech.com/en/careers/" data-href="careers/" data-href-tc="careers/" data-href-sc="careers/" translate="careers"></a>
+                        </li>
+                        <li>
+                            <a href="https://www.vtech.com/en/contact/contact-us/" data-href="contact/contact-us/" data-href-tc="contact/contact-us/" data-href-sc="contact/contact-us/" translate="contactUs"></a>
+                        </li>
+                        
+                    </ul>
+                </div>
+                <div class="col-sm-1-5 col-md-1-5-offset">
+                    <ul>
+                        <li>
+                            <a href="https://www.vtech.com/en/terms-of-use" data-href="terms-of-use/" data-href-tc="terms-of-use/" data-href-sc="terms-of-use/" translate="term_of_use"></a>
+                        </li>
+                        <li>
+                            <a href="https://www.vtech.com/en/privacy-policy-statement/" data-href="privacy-policy-statement/" data-href-tc="privacy-policy-statement/" data-href-sc="privacy-policy-statement/" translate="privacyStatement"></a>
+                        </li>
+						<li>
+                            <a href="https://www.vtech.com/en/personal-information-collection-statement/" data-href="personal-information-collection-statement/" data-href-tc="personal-information-collection-statement/" data-href-sc="personal-information-collection-statement/" translate="personal_information_collection_statement"></a>
+                        </li>
+						<li class="show-on-en">
+							<a href="https://www.vtech.com/wp-content/uploads/2024/09/Modern-Slavery-Statement-FY2024-EN-signed.pdf" data-href="https://www.vtech.com/wp-content/uploads/2024/09/Modern-Slavery-Statement-FY2024-EN-signed.pdf" data-href-tc="https://www.vtech.com/wp-content/uploads/2024/09/Modern-Slavery-Statement-FY2024-EN-signed.pdf" data-href-sc="https://www.vtech.com/wp-content/uploads/2024/09/Modern-Slavery-Statement-FY2024-EN-signed.pdf" translate="modern_slavery_statement"></a>
+						</li>
+						<li>
+							<a href="https://www.vtech.com/en/cookie-policy/" data-href="cookie-policy/" data-href-tc="cookie-policy/" data-href-sc="cookie-policy/" translate="footer_cookies_policy"></a>
+						</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <div class="container">
+            <p class="copyright" >©<span class="year-now">2021</span> <span translate="footerBottom"></span></p>
+        </div>
+    </div>  
+</footer>
+<div id="share-layer">
+        <div class="page-overlay__content">
+            <div id="page-overlay-content">
+                <section class="share-overlay"> 
+                    <header>
+                        <h1 translate="sharetitle"></h1>
+                    </header>
+                    <!-- language en -->
+                    <ul class="share-buttons share-buttons--global" id="share-en">
+                        <li class="share-button"> <a class="share-button__link facebook" rel="noopener noreferrer" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fwww.vtech.com"><i class="mk-moon-facebook-2"></i></a> </li>
+                        <li class="share-button"> <a class="share-button__link twitter" rel="noopener noreferrer" target="_blank" href="https://twitter.com/intent/tweet?text=&url=https%3A%2F%2Fwww.vtech.com"><i class="twitter"><img class="twitter-icon" src="./assets/img/share_twitter_logo_white.png"></i></a> </li>
+                        <li class="share-button"> <a class="share-button__link linkedin" rel="noopener noreferrer" target="_blank" href="https://www.linkedin.com/shareArticle?url=https%3A%2F%2Fwww.vtech.com&title="><i class="mk-moon-linkedin"></i></a> </li>
+                        <!--li class="share-button"> <a class="share-button__link google" target="_blank" href="https://plus.google.com/share?url=https%3A%2F%2Fwww.vtech.com"><i class="mk-moon-google-plus-3"></i></a> </li-->
+                        <li class="share-button"> <a class="share-button__link email" rel="noopener noreferrer" target="_blank" href="mailto:?subject=VTech%20Global%20|%20Educational%20Toys,%20Telecom%20Products&body=https://www.vtech.com"><i class="mk-li-mail"></i></a> </li>
+                    </ul>
+                    <!-- language tc -->
+                    <ul class="share-buttons share-buttons--global" id="share-tc" style="display: none;">
+                        <li class="share-button"> <a class="share-button__link facebook" rel="noopener noreferrer" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fwww.vtech.com"><i class="mk-moon-facebook-2"></i></a> </li>
+                        <li class="share-button"> <a class="share-button__link twitter" rel="noopener noreferrer" target="_blank" href="https://twitter.com/intent/tweet?text=&url=https%3A%2F%2Fwww.vtech.com"><i class="twitter"><img class="twitter-icon" src="./assets/img/share_twitter_logo_white.png"></i></a> </li>
+                        <li class="share-button"> <a class="share-button__link linkedin" rel="noopener noreferrer" target="_blank" href="https://www.linkedin.com/shareArticle?url=https%3A%2F%2Fwww.vtech.com&title="><i class="mk-moon-linkedin"></i></a> </li>
+                        <!--li class="share-button"> <a class="share-button__link google" target="_blank" href="https://plus.google.com/share?url=https%3A%2F%2Fwww.vtech.com%2Ftc%2F"><i class="mk-moon-google-plus-3"></i></a> </li-->
+                        <li class="share-button"> <a class="share-button__link email" rel="noopener noreferrer" target="_blank" href="mailto:?subject=%E7%9B%8A%E6%99%BA%E7%8E%A9%E5%85%B7,%E9%9B%BB%E8%A8%8A%E7%94%A2%E5%93%81%E5%8F%8A%E6%89%BF%E5%8C%85%E7%94%9F%E7%94%A2%E6%9C%8D%E5%8B%99%20|%20%E5%81%89%E6%98%93%E9%81%94&body=https://www.vtech.com"><i class="mk-li-mail"></i></a> </li>
+                    </ul>
+                    <!-- language sc -->
+                    <ul class="share-buttons share-buttons--global" id="share-sc" style="display: none;">
+                        <li class="share-button"> <a class="share-button__link facebook" rel="noopener noreferrer" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fwww.vtech.com"><i class="mk-moon-facebook-2"></i></a> </li>
+                        <li class="share-button"> <a class="share-button__link twitter" rel="noopener noreferrer" target="_blank" href="https://twitter.com/intent/tweet?text=&url=https%3A%2F%2Fwww.vtech.com"><i class="twitter"><img class="twitter-icon" src="./assets/img/share_twitter_logo_white.png"></i></a> </li>
+                        <li class="share-button"> <a class="share-button__link linkedin" rel="noopener noreferrer" target="_blank" href="https://www.linkedin.com/shareArticle?url=https%3A%2F%2Fwww.vtech.com&title="><i class="mk-moon-linkedin"></i></a> </li>
+                        <!--class="share-button"> <a class="share-button__link google" target="_blank" href="https://plus.google.com/share?url=https%3A%2F%2Fwww.vtech.com%2Fsc%2F"><i class="mk-moon-google-plus-3"></i></a> </li-->
+                        <li class="share-button"> <a class="share-button__link email" rel="noopener noreferrer" target="_blank" href="mailto:?subject=%E7%9B%8A%E6%99%BA%E7%8E%A9%E5%85%B7,%E7%94%B5%E8%AE%AF%E4%BA%A7%E5%93%81%E5%8F%8A%E6%89%BF%E5%8C%85%E7%94%9F%E4%BA%A7%E6%9C%8D%E5%8A%A1%20|%20%E4%BC%9F%E6%98%93%E8%BE%BE&body=https://www.vtech.com"><i class="mk-li-mail"></i></a> </li>
+                    </ul>
+                </section>
+            </div>
+        </div>
+        <a href="#" onclick="closeShare()" class="share-layer-closes"></a>
+    </div>
+<div class="scroll-top" onclick="scrollToTop()">
+    <span class="glyphicon glyphicon-chevron-up"></span>
+</div>
+<script src="app/js/jquery.rwdImageMaps.min.js"></script>
+<script src="app/app.js"></script>
+<script>
+    const target = document.querySelector('.map-container');
+    const sidebar = document.querySelector('.sidebar');
+    document.addEventListener('click', (event) => {
+        const btnAccept = document.querySelector('.vt-ccb-notify-button');
+        const buttonBoundaries = event.composedPath().includes(btnAccept);
+        if (buttonBoundaries) {
+            return
+        }
+        const withinBoundaries = event.composedPath().includes(target);
+        if (!withinBoundaries) {
+            $("#btn-close-sidebar").trigger('click');
+        } 
+    })
+   
+</script>
+
+
+<!-- Cookie Control Plugin -->
+
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js" integrity="sha256-srkrqNQxQ5PTxynPlMErZaHbKkH7Z2slLwYPjq/dLv0=" crossorigin="anonymous"></script>
+<script src="https://cc.cdn.civiccomputing.com/9/cookieControl-9.x.min.js" type="text/javascript"></script>
+	
+<script>
+
+    var config = {
+		apiKey: 'ac924cb69d0e7d5dc176556174ee9c2abd452a3d',
+		product: 'PRO',
+		setInnerHTML : true,
+		initialState: "closed",
+		consentCookieExpiry: 180,
+		notifyOnce: true,
+		sameSiteCookie:true,
+		sameSiteValue: "Lax",
+		subDomains : true,
+		onLoad: () => {
+			console.log('onLoad');
+                console.log(CookieControl.getCategoryConsent(0));
+                console.log(CookieControl.getCategoryConsent(1));
+                console.log(CookieControl.getCategoryConsent(2));
+                CookieControl.changeCategory(0, true);
+                CookieControl.changeCategory(1, true);
+                CookieControl.changeCategory(2, true);
+            },
+		locale: 'en',
+		closeStyle: 'button',
+		// statement : {
+		// 	description: '',
+		// 	name : 'Cookie Policy',
+		// 	url: '/en/cookies',
+		// 	updated : '13/08/2020'
+		// },
+		locales: [
+			{
+				locale: 'en',
+				text : {
+					title: 'This site uses cookies to store information on your computer/device.',
+					intro:  'Some of these cookies are essential, while others are optional and allow you to activate features according to your choices (amongst others: social sharing buttons, widgets for contest, full list below). <br><br> If you disable all, some features won\'t be available. You may further personalize your choices using the below settings. For more detailed information about the cookies we use, please see our <a href="/en/cookie-policy" target="_blank">Cookie Policy</a>.',
+					necessaryTitle : 'Cookies essential to the operation of the site',
+					necessaryDescription : 'These mandatory cookies enable essential features. Without them, our site cannot function properly. These cookies can only be deactivated by changing your browser preferences.',
+					thirdPartyTitle : 'Some cookies require your attention.',
+    				thirdPartyDescription : 'Please refer to below links for more information.',
+					on: "On",
+					off: "Off",
+					notifyTitle: "Your choice regarding cookies on this site",
+					notifyDescription: "We use cookies to optimise site functionality and give you the best possible experience.",
+					acceptSettings: "ENABLE ALL",
+					rejectSettings: "DISABLE ALL",
+					closeLabel: 'SAVE SETTINGS AND CLOSE'
+				
+				},
+				
+				mode: 'gdpr',
+				location: ['HK'],
+				
+				
+				optionalCookies:[
+					{
+						label: "Cookies for audience measurement",
+						description: 'They help us to improve our website by gathering traffic statistics.',
+						
+					},
+					{
+						label: "Functional Cookies",
+						description: 'Management of widgets for contests, newsletter subscriptions or other third party functions.',
+						thirdPartyCookies: [
+							{"name": "aboutcookies.org", "optOutLink": "https://aboutcookies.org/"},
+							{"name": "Quamnet", "optOutLink":"https://www.quamnet.com/privacy?lang=en"}
+						]
+					},
+					{
+						label: "Video Cookies",
+						description: 'We use YouTube services to give you access to videos of our products. These services may deposit third party cookies. However, we use advanced privacy mode proposed by Google (owner of YouTube), which means that no activity is collected by Google to personalize the viewing experience, according to their terms. Setting this to off will disable videos completely.',
+						
+					}
+				],
+			},
+			{
+				locale: 'tc',
+				text : {
+					title: '本網站使用cookie儲存資料到您的電腦/設備。',
+					intro:  '當中有些cookie是必要的，而其他cookie是可選的，您可以自行選擇啟用這些功能（其中包括：社交共享按鈕、供競賽用的小工具，完整列表如下）。<br><br>如果您停用所有cookie，某些功能將不可用。您可以使用以下設定進一步個人化您的選擇。有關我們使用cookie的詳細資訊，請參閱我們的<a href="/tc/cookie-policy" target="_blank">Cookie政策</a>。',
+					necessaryTitle : '網站運作必要的Cookie',
+					necessaryDescription : '這些強制性cookie確保網站的必要功能。沒有它們我們的網站將無法正常運作，您只能更改瀏覽器選項來停用這些cookie。',
+					thirdPartyTitle : '您需要留意某些cookie。',
+    				thirdPartyDescription : '請瀏覽以下連結以了解更多。',
+					on: "開",
+					off: "關",
+					acceptSettings: "啟用所有",
+					rejectSettings: "停用所有",
+					closeLabel: '儲存設定及關閉'
+				
+				},
+				
+				mode: 'gdpr',
+				location: ['HK'],
+					
+				// statement : {
+				// 	description: '如果全部停用，則某些功能將不可用。您可以使用以下設定進一步個性化您的選擇。有關我們使用cookies的詳細資訊，請參閱我們的',
+				// 	name : 'Cookie政策',
+				// 	url: '/tc/cookies',
+				// 	updated : '13/08/2020'
+				// },
+				optionalCookies:[
+					{
+						label: "衡量用戶的Cookie",
+						description: '這類cookie通過收集流量統計數據來幫助我們改善網站。',
+						
+					},
+					{
+						label: "功能性Cookie",
+						description: '管理供競賽用的小工具、通訊訂閱或其他第三方功能。',
+						thirdPartyCookies: [
+							{"name": "aboutcookies.org", "optOutLink": "https://aboutcookies.org/"},
+							{"name": "Quamnet", "optOutLink":"https://www.quamnet.com/privacy?lang=zh_hk"}
+						]
+					},
+					{
+						label: "影片Cookie",
+						description: '我們使用YouTube的服務讓您能夠觀看我們的產品影片。這些服務可能會存放第三方cookie。然而，我們使用Google（YouTube的所有者）建議的進階隱私模式，這意味Google不會根據其條款而收集任何活動來個人化用戶的觀看體驗。將此設定為關閉將會完全停用影片。',
+						
+					}
+				],
+			},
+			{
+				locale: 'sc',
+				text : {
+					title: '本网站使用cookie储存资料到您的电脑/设备。',
+					intro:  '当中有些cookie是必要的，而其他cookie是可选的，您可以自行选择启用这些功能（其中包括：社交共享按钮、供竞赛用的小工具，完整列表如下）。<br><br>如果您停用所有cookie，某些功能将不可用。您可以使用以下设定进一步个人化您的选择。有关我们使用cookie的详细资讯，请参阅我们的<a href="/sc/cookie-policy" target="_blank">Cookie政策</a>。',
+					necessaryTitle : '网站运作必要的Cookie',
+					necessaryDescription : '这些强制性cookie确保网站的必要功能。没有它们我们的网站将无法正常运作，您只能更改浏览器选项来停用这些cookie。',
+					thirdPartyTitle : '您需要留意某些cookie。',
+    				thirdPartyDescription : '请浏览以下连结以了解更多。',
+					on: "开",
+					off: "关",
+					acceptSettings: "启用所有",
+					rejectSettings: "停用所有",
+					closeLabel: '储存设定及关闭'
+				
+				},
+				
+				mode: 'gdpr',
+				location: ['HK'],
+					
+				// statement : {
+				// 	description: '如果全部停用，则某些功能将不可用。您可以使用以下设定进一步个性化您的选择。有关我们使用cookies的详细资讯，请参阅我们的',
+				// 	name : 'Cookie政策',
+				// 	url: '/tc/cookies',
+				// 	updated : '13/08/2020'
+				// },
+				optionalCookies:[
+					{
+						label: "衡量用户的Cookie",
+						description: '这类cookie通过收集流量统计数据来帮助我们改善网站。',
+						
+					},
+					{
+						label: "功能性Cookie",
+						description: '管理供竞赛用的小工具、通讯订阅或其他第叁方功能。',
+						thirdPartyCookies: [
+							{"name": "aboutcookies.org", "optOutLink": "https://aboutcookies.org/"},
+							{"name": "Quamnet", "optOutLink":"https://www.quamnet.com/privacy?lang=zh_cn"}
+						]
+					},
+					{
+						label: "影片Cookie",
+						description: '我们使用YouTube的服务让您能够观看我们的产品影片。这些服务可能会存放第叁方cookie。然而，我们使用Google（YouTube的所有者）建议的进阶隐私模式，这意味Google不会根据其条款而收集任何活动来个人化用户的观看体验。将此设定为关闭将会完全停用影片。',
+						
+					}
+				],
+			},
+		],
+		necessaryCookies: [
+				'visid_incap_*', 'incap_ses_*', "CookieControl", "PHPSESSID", "vgl", "displayed_btm_consent", "geolocation"
+			],
+        optionalCookies: [
+        
+           {
+                    name: 'analytics',
+                    cookies: ["__utma", "__utmb", "__utmc", "__utmz", "__utmt" ,"__utm.gif", "___utmvc"],
+                    onAccept : function(){		
+						
+                        try
+                        {
+				//close_cookie_bottom_consent()	
+				/*console.log('Accept analytics');						
+						_gaq.push(['_setAccount', 'UA-60336080-1']);
+						_gaq.push(['_gat._anonymizeIp']);
+						_gaq.push(['_trackPageview']);		*/
+                        }
+                        catch(err) {}
+								
+					},
+                    onRevoke: function(){
+					},
+					
+				},
+                
+				{
+					name: 'functional',
+					cookies: ["__cfduid"],
+					onAccept : function(){
+						//enable_chart();
+						//close_cookie_bottom_consent()
+					},
+					onRevoke: function(){
+						// removeChart();
+						//disable_chart();
+
+					},
+					thirdPartyCookies: [ 
+							{"name": "aboutcookies.org", "optOutLink": "https://aboutcookies.org/"},
+							{"name": "Quamnet", "optOutLink":"https://www.quamnet.com/privacy?lang=en"}
+						]
+				},
+				{
+					name: 'video',
+					lawfulBasis: 'legitimate interest',
+                    cookies: ["YSC", "VISITOR_INFO1_LIVE"],
+                    onAccept : function(){
+						//show_video();
+					},
+                    onRevoke: function(){
+						//disable_video();
+						//close_cookie_bottom_consent()
+					},
+					thirdPartyCookies: [
+							{"name": "aboutcookies.org", "optOutLink": "https://aboutcookies.org/"},
+							{"name": "YouTube", "optOutLink":"https://support.google.com/youtube/answer/32050?co=GENIE.Platform%3DDesktop&hl=en"}
+						]
+                }
+        ],
+
+        position: 'LEFT',
+        theme: 'DARK',
+        branding : {
+			removeAbout: true
+		}
+    };
+    
+    CookieControl.load( config );
+</script>
+
+<!-- Cookie consent custom bottom banner[Start] -->
+
+<div id="vt-ccb-notify" role="region" >
+	<div class="vt-ccb-notify-text">
+		<h3 translate="cookieTitle">This site uses cookies to store information on your computer/device.</h3>
+		<p><span translate="cookieContent">Some of these cookies are essential, while others help us to improve your experience by providing insights into how the site is being used. For more detailed information about the cookies we use, please see our</span> <a rel="noopener noreferrer" href="https://www.vtech.com/en/cookie-policy/" data-href="cookie-policy/" data-href-tc="cookie-policy/" data-href-sc="cookie-policy/" target="_blank" tabindex="0" translate="cookies_policy">Cookie Policy.</a></p>
+	</div>
+	
+	<div class="vt-ccb-notify-buttons">
+		<button id="vt-ccb-notify-accept" translate="buttonAccept" class="vt-ccb-notify-button vt-ccb-link vt-ccb-tabbable vt-ccb-accept-button">I Accept</button>
+		
+		<button id="vt-ccb-notify_setting" translate="cookieSetting" class="vt-ccb-link vt-ccb-tabbable open-ccb-setting vt-ccb-notify-link">Cookies settings</button>
+		
+	</div>
+</div>
+
+<!-- Cookie consent custom bottom banner[End] -->
+
+<script type="text/javascript">
+	function close_cookie_bottom_consent(){
+		$("#vt-ccb-notify").fadeTo(900, 0, function() {
+			// Animation complete.
+			Cookies.set("displayed_btm_consent", true);
+			$("#vt-ccb-notify").css('display','none');
+		});
+	}
+
+	function civicuk_language_change(lang){		
+		if(typeof(lang) == 'string' && config.locale != lang ){		
+			if(['tc','sc','en'].includes(lang)){	
+				config.locale=lang; 						
+				CookieControl.load( config );				
+			}				
+			
+		}	
+	}
+    $( document ).ready(function() {
+        var displayed_btm_consent = Cookies.get("displayed_btm_consent");
+		if( displayed_btm_consent == undefined || displayed_btm_consent == null ){
+			$("#vt-ccb-notify").fadeTo(900, 0.9);
+		}else{
+			close_cookie_bottom_consent();
+		}
+        //add auto change year
+        $('.year-now').text(new Date().getFullYear());
+    });
+
+	$( "#vt-ccb-notify-accept" ).on('click', function(e) {
+		//close bottom banner
+		CookieControl.acceptAll();
+		close_cookie_bottom_consent();
+		
+	});
+
+
+	$( "#vt-ccb-notify_setting" ).on('click', function(e) {
+		//close bottom banner and open the right consent
+		e.preventDefault();
+		CookieControl.open();
+		close_cookie_bottom_consent();
+		
+	});
+
+	$('body').on( "click", ".open-ccb-setting", function(e) {
+		e.preventDefault();
+		CookieControl.open();
+		close_cookie_bottom_consent();
+	});
+
+	$("#vt-ccb-notify-dismiss").on('click', function() {
+		//close bottom banner
+		close_cookie_bottom_consent();
+	});	
+	
+</script>
+
+
+<script type="text/javascript" src="/_Incapsula_Resource?SWJIYLWA=719d34d31c8e3a6e6fffd425f7e032f3&ns=3&cb=1918364264" async></script></body>
+
+</html>
