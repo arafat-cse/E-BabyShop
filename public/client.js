@@ -13,7 +13,7 @@ socket.on('updateusers', updateUserList);
 
 function addUser() {
     userName =  prompt("Enter your Name!");
-    roomName =  prompt("Enter your room name!");
+    roomName =  prompt("Enter your Group name!");
 
       socket.emit('adduser', userName, roomName);
   }

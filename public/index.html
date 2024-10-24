@@ -73,7 +73,10 @@
     const count = localStorage.getItem('cart');
      const lent = JSON.parse(count);
         // console.log(lent.length);
-        document.getElementById("productsCountInCart").innerHTML = lent.length;
+        if(lent != null)
+        {
+          document.getElementById("productsCountInCart").innerHTML = lent.length;
+        }
       let productsList = [];
       function openModal(index) {
           const product = productsList[index];
